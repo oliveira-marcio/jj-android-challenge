@@ -1,6 +1,5 @@
 package com.example.jjandroidchallenge.repository;
 
-import android.app.Application;
 import android.arch.lifecycle.MutableLiveData;
 
 import com.example.jjandroidchallenge.models.Device;
@@ -13,12 +12,22 @@ import java.util.List;
 
 public class Repository {
 
-    private Application mApplication;
+    private static final Object LOCK = new Object();
+    private static Repository sInstance;
+
     private MutableLiveData<List<Device>> mDevices = new MutableLiveData<>();
 
-    public Repository(Application application){
-        mApplication = application;
+    public Repository(){
         mDevices.postValue(createFakeDevices());
+    }
+
+    public synchronized static Repository getInstance(){
+        if(sInstance == null){
+            synchronized (LOCK){
+                sInstance = new Repository();
+            }
+        }
+        return sInstance;
     }
 
     public MutableLiveData<List<Device>> getAllDevices() {

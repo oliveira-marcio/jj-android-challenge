@@ -17,7 +17,9 @@ import android.widget.Toast;
 
 import com.example.jjandroidchallenge.R;
 import com.example.jjandroidchallenge.models.Device;
+import com.example.jjandroidchallenge.utils.Injector;
 import com.example.jjandroidchallenge.viewmodel.MainActivityViewModel;
+import com.example.jjandroidchallenge.viewmodel.MainViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +67,9 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
             }
         });
 
+        MainViewModelFactory factory = Injector.provideMainActivityViewModelFactory();
         mViewModel = ViewModelProviders
-                .of(this)
+                .of(this, factory)
                 .get(MainActivityViewModel.class);
 
         mViewModel.getAllDevices().observe(this, new Observer<List<Device>>() {
