@@ -47,11 +47,15 @@ public class Repository {
         return mSelectedDevice;
     }
 
-    public void toggleCheckedStatus(long id, boolean newStatus) {
+    public void toggleCheckedStatus(long id, String checkOutBy, String checkOutDate, boolean isCheckOut) {
         List<Device> devices = mDevices.getValue();
         for (Device device : devices) {
             if (device.getId() == id) {
-                device.setIsCheckedOut(newStatus);
+                device.setIsCheckedOut(isCheckOut);
+                if(isCheckOut) {
+                    device.setLastCheckedOutBy(checkOutBy);
+                    device.setLastCheckedOutDate(checkOutDate);
+                }
                 mSelectedDevice.setValue(device);
                 mDevices.setValue(devices);
                 break;

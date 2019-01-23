@@ -15,4 +15,10 @@
     <string name="details_last_date">Last Date Checked Out: %s</string>
     <string name="details_check_in">CHECK-IN</string>
     <string name="details_check_out">CHECK-OUT</string>
+    <string name="dialog_hint_name">Enter your name</string>
+    <string name="dialog_check_out_confirm">Continue</string>
+    <string name="dialog_check_out_cancel">Cancel</string>
+    <string name="dialog_check_out_error">Enter a name</string>
+    <string name="dialog_check_in_confirmation">Device checked in successfully</string>
+    <string name="dialog_check_out_confirmation">Device checked out successfully</string>
 </resources>
