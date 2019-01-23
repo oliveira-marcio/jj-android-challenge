@@ -15,7 +15,7 @@ public class MainActivityViewModel extends ViewModel {
         mRepository = repository;
     }
 
-    public LiveData<List<Device>> getAllDevices(){
+    public LiveData<List<Device>> getAllDevices() {
         return mRepository.getAllDevices();
     }
 }

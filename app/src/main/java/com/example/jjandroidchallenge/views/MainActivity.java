@@ -3,6 +3,7 @@ package com.example.jjandroidchallenge.views;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT |ItemTouchHelper.RIGHT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
                 return false;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
             }
         });
 
-        MainViewModelFactory factory = Injector.provideMainActivityViewModelFactory();
+        MainViewModelFactory factory = Injector.provideMainViewModelFactory();
         mViewModel = ViewModelProviders
                 .of(this, factory)
                 .get(MainActivityViewModel.class);
@@ -81,13 +82,13 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
             }
         });
     }
-    
-    private void addDevice(){
+
+    private void addDevice() {
         Toast.makeText(this, R.string.toast_wip, Toast.LENGTH_SHORT).show();
     }
 
-    private void removeDevice(){
-        Toast.makeText(MainActivity.this, R.string.toast_wip, Toast.LENGTH_SHORT).show();;
+    private void removeDevice() {
+        Toast.makeText(MainActivity.this, R.string.toast_wip, Toast.LENGTH_SHORT).show();
         mAdapter.notifyDataSetChanged();
     }
 
@@ -114,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
 
     @Override
     public void onItemClick(Device clickedDevice) {
-        Toast.makeText(this, clickedDevice.getDevice(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, DetailsActivity.class);
+        intent.putExtra("device", clickedDevice);
+        startActivity(intent);
     }
 }

@@ -10,7 +10,7 @@ public class Device implements Parcelable {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private Long id;
     @SerializedName("device")
     @Expose
     private String device;
@@ -44,7 +44,7 @@ public class Device implements Parcelable {
     };
 
     protected Device(Parcel in) {
-        this.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
+        this.id = ((Long) in.readValue((Long.class.getClassLoader())));
         this.device = ((String) in.readValue((String.class.getClassLoader())));
         this.os = ((String) in.readValue((String.class.getClassLoader())));
         this.manufacturer = ((String) in.readValue((String.class.getClassLoader())));
@@ -56,11 +56,11 @@ public class Device implements Parcelable {
     public Device() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

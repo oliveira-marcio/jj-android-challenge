@@ -7,4 +7,12 @@
     <string name="list_item_title">%s - %s</string>
     <string name="list_item_status_checked_out">Checked out by %s</string>
     <string name="list_item_status_checked_in">Available</string>
+    <string name="details_label">Device Detail</string>
+    <string name="details_device">Device: %s</string>
+    <string name="details_os">OS: %s</string>
+    <string name="details_manufacturer">Manufacturer: %s</string>
+    <string name="details_last_user">Last User Checked Out: %s</string>
+    <string name="details_last_date">Last Date Checked Out: %s</string>
+    <string name="details_check_in">CHECK-IN</string>
+    <string name="details_check_out">CHECK-OUT</string>
 </resources>

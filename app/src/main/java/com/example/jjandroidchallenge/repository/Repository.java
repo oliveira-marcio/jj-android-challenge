@@ -1,5 +1,6 @@
 package com.example.jjandroidchallenge.repository;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
 import com.example.jjandroidchallenge.models.Device;
@@ -15,15 +16,17 @@ public class Repository {
     private static final Object LOCK = new Object();
     private static Repository sInstance;
 
+    // TODO: Remove after real database implementation
     private MutableLiveData<List<Device>> mDevices = new MutableLiveData<>();
+    private MutableLiveData<Device> mSelectedDevice = new MutableLiveData<>();
 
-    public Repository(){
+    public Repository() {
         mDevices.postValue(createFakeDevices());
     }
 
-    public synchronized static Repository getInstance(){
-        if(sInstance == null){
-            synchronized (LOCK){
+    public synchronized static Repository getInstance() {
+        if (sInstance == null) {
+            synchronized (LOCK) {
                 sInstance = new Repository();
             }
         }
@@ -34,7 +37,29 @@ public class Repository {
         return mDevices;
     }
 
-    public List<Device> createFakeDevices(){
+    public LiveData<Device> getDeviceById(long id) {
+        for (Device device : mDevices.getValue()) {
+            if (device.getId() == id) {
+                mSelectedDevice.setValue(device);
+                break;
+            }
+        }
+        return mSelectedDevice;
+    }
+
+    public void toggleCheckedStatus(long id, boolean newStatus) {
+        List<Device> devices = mDevices.getValue();
+        for (Device device : devices) {
+            if (device.getId() == id) {
+                device.setIsCheckedOut(newStatus);
+                mSelectedDevice.setValue(device);
+                mDevices.setValue(devices);
+                break;
+            }
+        }
+    }
+
+    private List<Device> createFakeDevices() {
         String devicesJSON = "[\n" +
                 "  {\n" +
                 "    \"id\": 0,\n" +
@@ -79,7 +104,8 @@ public class Repository {
                 "  }\n" +
                 "]";
 
-        Type listType = new TypeToken<ArrayList<Device>>(){}.getType();
+        Type listType = new TypeToken<ArrayList<Device>>() {
+        }.getType();
         return new Gson().fromJson(devicesJSON, listType);
     }
 }

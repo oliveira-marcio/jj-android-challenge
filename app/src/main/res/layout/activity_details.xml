@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/default_padding"
+    tools:context=".views.DetailsActivity">
+
+    <TextView
+        android:id="@+id/tv_device"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Device: iPhone 4" />
+
+    <TextView
+        android:id="@+id/tv_os"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="OS: iOS 8.3" />
+
+    <TextView
+        android:id="@+id/tv_manufacturer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Manufacturer: Apple" />
+
+    <TextView
+        android:id="@+id/tv_last_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Last User Checked Out: Márcio Oliveira" />
+
+    <TextView
+        android:id="@+id/tv_last_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Last Date Checked Out: 01/23/2019 8:00 AM" />
+
+    <TextView
+        android:id="@+id/tv_check_in_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_padding"
+        android:gravity="center"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:textStyle="bold"
+        tools:text="CHECK-IN" />
+
+</LinearLayout>
