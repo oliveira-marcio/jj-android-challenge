@@ -10,13 +10,19 @@ import java.util.List;
 
 public class MainActivityViewModel extends ViewModel {
     private final Repository mRepository;
+    private LiveData<List<Device>> mDevices;
 
     public MainActivityViewModel(Repository repository) {
         mRepository = repository;
+        mDevices = mRepository.getAllDevices();
     }
 
     public LiveData<List<Device>> getAllDevices() {
-        return mRepository.getAllDevices();
+        return mDevices;
+    }
+
+    public void refreshDevices(){
+        mDevices = mRepository.getAllDevices();
     }
 
     public void removeDevice(Device device) {

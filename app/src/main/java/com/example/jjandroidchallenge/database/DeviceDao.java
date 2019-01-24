@@ -29,6 +29,9 @@ public interface DeviceDao {
     @Delete
     int deleteDevice(Device device);
 
+    @Query("DELETE FROM devices")
+    void deleteAllDevices();
+
     @Update
     int updateDevice(Device device);
 }

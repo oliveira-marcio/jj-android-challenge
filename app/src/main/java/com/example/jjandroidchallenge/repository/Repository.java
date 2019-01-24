@@ -1,49 +1,79 @@
 package com.example.jjandroidchallenge.repository;
 
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.example.jjandroidchallenge.R;
 import com.example.jjandroidchallenge.database.DeviceDao;
 import com.example.jjandroidchallenge.models.Device;
+import com.example.jjandroidchallenge.network.DeviceDataService;
 import com.example.jjandroidchallenge.utils.AppExecutors;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Repository {
 
+    private final String LOG = Repository.class.getSimpleName();
+
     private static final Object LOCK = new Object();
     private static Repository sInstance;
+
+    private final Context mContext;
     private final DeviceDao mDeviceDao;
     private final AppExecutors mExecutors;
+    private final DeviceDataService mDataService;
 
-    public Repository(DeviceDao deviceDao,
-                      AppExecutors executors) {
+    public Repository(Context context,
+                      DeviceDao deviceDao,
+                      AppExecutors executors,
+                      DeviceDataService dataService) {
+        mContext = context;
         mDeviceDao = deviceDao;
         mExecutors = executors;
-
-        final List<Device> devices = getFakeDevices();
-        mExecutors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                mDeviceDao.bulkInsert(devices);
-            }
-        });
+        mDataService = dataService;
     }
 
-    public synchronized static Repository getInstance(DeviceDao deviceDao,
-                                                      AppExecutors executors) {
+    public synchronized static Repository getInstance(Context context,
+                                                      DeviceDao deviceDao,
+                                                      AppExecutors executors,
+                                                      DeviceDataService dataService) {
         if (sInstance == null) {
             synchronized (LOCK) {
-                sInstance = new Repository(deviceDao, executors);
+                sInstance = new Repository(context, deviceDao, executors, dataService);
             }
         }
         return sInstance;
     }
 
+    private void fetchAndSyncDevices() {
+        mDataService.getDevices().enqueue(new Callback<List<Device>>() {
+            @Override
+            public void onResponse(Call<List<Device>> call, final Response<List<Device>> response) {
+                mExecutors.diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDeviceDao.deleteAllDevices();
+                        mDeviceDao.bulkInsert(response.body());
+                    }
+                });
+                Toast.makeText(mContext, R.string.data_sync_success, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<List<Device>> call, Throwable t) {
+                Toast.makeText(mContext, R.string.data_sync_error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     public LiveData<List<Device>> getAllDevices() {
+        fetchAndSyncDevices();
         return mDeviceDao.getAllDevices();
     }
 
@@ -59,6 +89,31 @@ public class Repository {
                 mDeviceDao.insertDevice(newDevice);
             }
         });
+
+        mDataService.postDevice(newDevice).enqueue(new Callback<Device>() {
+            @Override
+            public void onResponse(Call<Device> call, Response<Device> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(mContext, R.string.data_sync_error, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.i(LOG, "HTTP CODE: " + response.code());
+                Device device = response.body();
+                if (device != null) {
+                    Log.i(LOG, "" + device.getId());
+                    Log.i(LOG, device.getDevice());
+                    Log.i(LOG, device.getOs());
+                    Log.i(LOG, device.getManufacturer());
+                    Log.i(LOG, "" + device.getIsCheckedOut());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Device> call, Throwable t) {
+                Toast.makeText(mContext, R.string.data_sync_error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void removeDeviceById(final Device device) {
@@ -66,6 +121,31 @@ public class Repository {
             @Override
             public void run() {
                 mDeviceDao.deleteDevice(device);
+            }
+        });
+
+        mDataService.deleteDevice(device.getId()).enqueue(new Callback<Device>() {
+            @Override
+            public void onResponse(Call<Device> call, Response<Device> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(mContext, R.string.data_sync_error, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.i(LOG, "HTTP CODE: " + response.code());
+                Device device = response.body();
+                if (device != null) {
+                    Log.i(LOG, "" + device.getId());
+                    Log.i(LOG, device.getDevice());
+                    Log.i(LOG, device.getOs());
+                    Log.i(LOG, device.getManufacturer());
+                    Log.i(LOG, "" + device.getIsCheckedOut());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Device> call, Throwable t) {
+                Toast.makeText(mContext, R.string.data_sync_error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -81,55 +161,30 @@ public class Repository {
                 mDeviceDao.updateDevice(device);
             }
         });
-    }
 
-    private List<Device> getFakeDevices() {
-        String devicesJSON = "[\n" +
-                "  {\n" +
-                "    \"id\": 0,\n" +
-                "    \"device\": \"iPhone 4\",\n" +
-                "    \"os\": \"iOS 8.3\",\n" +
-                "    \"manufacturer\": \"Apple\",\n" +
-                "    \"lastCheckedOutDate\": \"2016-03-26T13:53:00-05:00\",\n" +
-                "    \"lastCheckedOutBy\": \"Matt Smith\",\n" +
-                "    \"isCheckedOut\": true\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"id\": 1,\n" +
-                "    \"device\": \"iPhone 5\",\n" +
-                "    \"os\": \"iOS 9.1\",\n" +
-                "    \"manufacturer\": \"Apple\",\n" +
-                "    \"isCheckedOut\": false\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"id\": 2,\n" +
-                "    \"device\": \"iPhone 5S\",\n" +
-                "    \"os\": \"iOS 9.3\",\n" +
-                "    \"manufacturer\": \"Apple\",\n" +
-                "    \"lastCheckedOutDate\": \"2016-03-21T10:33:00-05:00\",\n" +
-                "    \"lastCheckedOutBy\": \"David Richards\",\n" +
-                "    \"isCheckedOut\": true\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"id\": 3,\n" +
-                "    \"device\": \"Moto G\",\n" +
-                "    \"os\": \"Android 4.3\",\n" +
-                "    \"manufacturer\": \"Motorola\",\n" +
-                "    \"lastCheckedOutDate\": \"2016-02-21T09:10:00-05:00\",\n" +
-                "    \"lastCheckedOutBy\": \"Chris Evans\",\n" +
-                "    \"isCheckedOut\": false\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"id\": 4,\n" +
-                "    \"device\": \"iPhone 6S\",\n" +
-                "    \"os\": \"iOS 9.3\",\n" +
-                "    \"manufacturer\": \"Apple\",\n" +
-                "    \"isCheckedOut\": false\n" +
-                "  }\n" +
-                "]";
+        mDataService.updateDevice(device.getId(), device).enqueue(new Callback<Device>() {
+            @Override
+            public void onResponse(Call<Device> call, Response<Device> response) {
+                if (!response.isSuccessful()) {
+                    Toast.makeText(mContext, R.string.data_sync_error, Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        Type listType = new TypeToken<ArrayList<Device>>() {
-        }.getType();
-        return new Gson().fromJson(devicesJSON, listType);
+                Log.i(LOG, "HTTP CODE: " + response.code());
+                Device device = response.body();
+                if (device != null) {
+                    Log.i(LOG, "" + device.getId());
+                    Log.i(LOG, device.getDevice());
+                    Log.i(LOG, device.getOs());
+                    Log.i(LOG, device.getManufacturer());
+                    Log.i(LOG, "" + device.getIsCheckedOut());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Device> call, Throwable t) {
+                Toast.makeText(mContext, R.string.data_sync_error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

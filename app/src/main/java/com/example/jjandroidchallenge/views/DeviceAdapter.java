@@ -16,14 +16,14 @@ import java.util.List;
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder> {
 
     private List<Device> mDevices;
-    private DeviceAdapterClichHandler mHandler;
+    private DeviceAdapterClickHandler mHandler;
     private Context mContext;
 
-    public interface DeviceAdapterClichHandler {
+    public interface DeviceAdapterClickHandler {
         void onItemClick(Device clickedDevice);
     }
 
-    public DeviceAdapter(List<Device> devices, DeviceAdapterClichHandler handler) {
+    public DeviceAdapter(List<Device> devices, DeviceAdapterClickHandler handler) {
         mHandler = handler;
         mDevices = devices;
     }

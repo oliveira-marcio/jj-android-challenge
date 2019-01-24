@@ -3,6 +3,8 @@ package com.example.jjandroidchallenge.utils;
 import android.content.Context;
 
 import com.example.jjandroidchallenge.database.DeviceDatabase;
+import com.example.jjandroidchallenge.network.DeviceDataClient;
+import com.example.jjandroidchallenge.network.DeviceDataService;
 import com.example.jjandroidchallenge.repository.Repository;
 import com.example.jjandroidchallenge.viewmodel.AddDeviceViewModelFactory;
 import com.example.jjandroidchallenge.viewmodel.DetailsViewModelFactory;
@@ -12,7 +14,8 @@ public class Injector {
     public static Repository provideRepository(Context context) {
         DeviceDatabase database = DeviceDatabase.getInstance(context.getApplicationContext());
         AppExecutors executors = AppExecutors.getInstance();
-        return Repository.getInstance(database.deviceDao(), executors);
+        DeviceDataService dataService = DeviceDataClient.getInstance();
+        return Repository.getInstance(context.getApplicationContext(), database.deviceDao(), executors, dataService);
     }
 
     public static MainViewModelFactory provideMainViewModelFactory(Context context) {

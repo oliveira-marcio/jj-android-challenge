@@ -32,4 +32,7 @@
     <string name="add_device_empty_error">Please fill up all fields.</string>
     <string name="add_device_success">Device successfully added</string>
     <string name="delete_device_success">Device successfully deleted</string>
+    <string name="data_sync_success">Data successfully synced with server</string>
+    <string name="data_sync_error">Error syncing with server. Try again later.</string>
+    <string name="empty_view_message">No devices found.</string>
 </resources>

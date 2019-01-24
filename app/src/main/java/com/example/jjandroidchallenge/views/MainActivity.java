@@ -8,12 +8,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jjandroidchallenge.R;
@@ -25,11 +27,13 @@ import com.example.jjandroidchallenge.viewmodel.MainViewModelFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements DeviceAdapter.DeviceAdapterClichHandler {
+public class MainActivity extends AppCompatActivity implements DeviceAdapter.DeviceAdapterClickHandler {
 
     private RecyclerView mRecyclerView;
+    private TextView mEmptyView;
     private List<Device> mDevices;
     private FloatingActionButton mFab;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private DeviceAdapter mAdapter;
 
     private MainActivityViewModel mViewModel;
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
+        mEmptyView = findViewById(R.id.empty_view);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -78,11 +83,36 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
         mViewModel.getAllDevices().observe(this, new Observer<List<Device>>() {
             @Override
             public void onChanged(@Nullable List<Device> devices) {
-                mDevices.clear();
-                mDevices.addAll(devices);
-                mAdapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+                if (devices.size() == 0) {
+                    showEmptyView();
+                } else {
+                    mDevices.clear();
+                    mDevices.addAll(devices);
+                    mAdapter.notifyDataSetChanged();
+                    showDeviceList();
+                }
             }
         });
+
+        mSwipeRefreshLayout = findViewById(R.id.swipe_layout);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mViewModel.refreshDevices();
+            }
+        });
+    }
+
+    private void showDeviceList() {
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mEmptyView.setVisibility(View.GONE);
+    }
+
+    private void showEmptyView() {
+        mRecyclerView.setVisibility(View.GONE);
+        mEmptyView.setVisibility(View.VISIBLE);
     }
 
     private void addDevice() {
