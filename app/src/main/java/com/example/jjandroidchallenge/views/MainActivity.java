@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                showDeleteConfirmationDialog();
+                showDeleteConfirmationDialog(mDevices.get(viewHolder.getAdapterPosition()).getId());
             }
         }).attachToRecyclerView(mRecyclerView);
 
@@ -88,17 +88,17 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
         startActivity(intent);
     }
 
-    private void removeDevice() {
-        Toast.makeText(MainActivity.this, R.string.toast_wip, Toast.LENGTH_SHORT).show();
-        mAdapter.notifyDataSetChanged();
+    private void removeDevice(long id) {
+        mViewModel.removeDevice(id);
+        Toast.makeText(this, R.string.delete_device_success, Toast.LENGTH_SHORT).show();
     }
 
-    private void showDeleteConfirmationDialog() {
+    private void showDeleteConfirmationDialog(final long deviceId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_confirmation);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                removeDevice();
+                removeDevice(deviceId);
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

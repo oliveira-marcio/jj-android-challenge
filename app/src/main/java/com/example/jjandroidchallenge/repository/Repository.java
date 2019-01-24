@@ -61,6 +61,17 @@ public class Repository {
         mDevices.setValue(devices);
     }
 
+    public void removeDeviceById(long id){
+        List<Device> devices = mDevices.getValue();
+        for (Device device : devices) {
+            if (device.getId() == id) {
+                devices.remove(device);
+                mDevices.setValue(devices);
+                break;
+            }
+        }
+    }
+
     public void toggleCheckedStatus(long id, String checkOutBy, String checkOutDate, boolean isCheckOut) {
         List<Device> devices = mDevices.getValue();
         for (Device device : devices) {

@@ -18,4 +18,8 @@ public class MainActivityViewModel extends ViewModel {
     public LiveData<List<Device>> getAllDevices() {
         return mRepository.getAllDevices();
     }
+
+    public void removeDevice(long id){
+        mRepository.removeDeviceById(id);
+    }
 }
