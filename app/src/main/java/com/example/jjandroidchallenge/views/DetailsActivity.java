@@ -89,7 +89,7 @@ public class DetailsActivity extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
         View view = inflater.inflate(R.layout.dialog_check_out, null);
 
-        final EditText nameEditText = view.findViewById(R.id.name);
+        final EditText nameEditText = view.findViewById(R.id.edt_name);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(view)

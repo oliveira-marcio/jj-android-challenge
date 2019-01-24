@@ -5,10 +5,16 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/name"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/dialog_hint_name" />
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/edt_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/dialog_hint_name" />
+
+    </android.support.design.widget.TextInputLayout>
 
 </FrameLayout>

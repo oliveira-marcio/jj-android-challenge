@@ -84,7 +84,8 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
     }
 
     private void addDevice() {
-        Toast.makeText(this, R.string.toast_wip, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, AddDeviceActivity.class);
+        startActivity(intent);
     }
 
     private void removeDevice() {

@@ -21,4 +21,14 @@
     <string name="dialog_check_out_error">Enter a name</string>
     <string name="dialog_check_in_confirmation">Device checked in successfully</string>
     <string name="dialog_check_out_confirmation">Device checked out successfully</string>
+    <string name="add_device_label">Add Device</string>
+    <string name="add_device_hint_device">Device</string>
+    <string name="add_device_hint_os">OS</string>
+    <string name="add_device_hint_manufacturer">Manufacturer</string>
+    <string name="menu_action_save">SAVE</string>
+    <string name="dialog_discard_message">Do you want to discard changes?</string>
+    <string name="dialog_discard_confirm">DISCARD</string>
+    <string name="dialog_discard_cancel">KEEP EDITING</string>
+    <string name="add_device_empty_error">Please fill up all fields.</string>
+    <string name="add_device_success">Device successfully added</string>
 </resources>
