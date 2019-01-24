@@ -1,9 +1,10 @@
 package com.example.jjandroidchallenge.repository;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 
+import com.example.jjandroidchallenge.database.DeviceDao;
 import com.example.jjandroidchallenge.models.Device;
+import com.example.jjandroidchallenge.utils.AppExecutors;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -15,80 +16,74 @@ public class Repository {
 
     private static final Object LOCK = new Object();
     private static Repository sInstance;
+    private final DeviceDao mDeviceDao;
+    private final AppExecutors mExecutors;
 
-    // TODO: Remove after real database implementation
-    private MutableLiveData<List<Device>> mDevices = new MutableLiveData<>();
-    private MutableLiveData<Device> mSelectedDevice = new MutableLiveData<>();
+    public Repository(DeviceDao deviceDao,
+                      AppExecutors executors) {
+        mDeviceDao = deviceDao;
+        mExecutors = executors;
 
-    public Repository() {
-        mDevices.postValue(createFakeDevices());
+        final List<Device> devices = getFakeDevices();
+        mExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDeviceDao.bulkInsert(devices);
+            }
+        });
     }
 
-    public synchronized static Repository getInstance() {
+    public synchronized static Repository getInstance(DeviceDao deviceDao,
+                                                      AppExecutors executors) {
         if (sInstance == null) {
             synchronized (LOCK) {
-                sInstance = new Repository();
+                sInstance = new Repository(deviceDao, executors);
             }
         }
         return sInstance;
     }
 
-    public MutableLiveData<List<Device>> getAllDevices() {
-        return mDevices;
+    public LiveData<List<Device>> getAllDevices() {
+        return mDeviceDao.getAllDevices();
     }
 
     public LiveData<Device> getDeviceById(long id) {
-        for (Device device : mDevices.getValue()) {
-            if (device.getId() == id) {
-                mSelectedDevice.setValue(device);
-                break;
-            }
-        }
-        return mSelectedDevice;
+        return mDeviceDao.getDevice(id);
     }
 
     public void addDevice(String device, String os, String manufacturer) {
-        List<Device> devices = mDevices.getValue();
-
-        Device newDevice = new Device();
-        newDevice.setId((long) devices.size());
-        newDevice.setDevice(device);
-        newDevice.setOs(os);
-        newDevice.setManufacturer(manufacturer);
-        newDevice.setIsCheckedOut(false);
-
-        devices.add(newDevice);
-        mDevices.setValue(devices);
-    }
-
-    public void removeDeviceById(long id){
-        List<Device> devices = mDevices.getValue();
-        for (Device device : devices) {
-            if (device.getId() == id) {
-                devices.remove(device);
-                mDevices.setValue(devices);
-                break;
+        final Device newDevice = new Device(device, os, manufacturer);
+        mExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDeviceDao.insertDevice(newDevice);
             }
-        }
+        });
     }
 
-    public void toggleCheckedStatus(long id, String checkOutBy, String checkOutDate, boolean isCheckOut) {
-        List<Device> devices = mDevices.getValue();
-        for (Device device : devices) {
-            if (device.getId() == id) {
-                device.setIsCheckedOut(isCheckOut);
-                if (isCheckOut) {
-                    device.setLastCheckedOutBy(checkOutBy);
-                    device.setLastCheckedOutDate(checkOutDate);
-                }
-                mSelectedDevice.setValue(device);
-                mDevices.setValue(devices);
-                break;
+    public void removeDeviceById(final Device device) {
+        mExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDeviceDao.deleteDevice(device);
             }
-        }
+        });
     }
 
-    private List<Device> createFakeDevices() {
+    public void toggleCheckedStatus(final Device device, String checkOutBy, String checkOutDate, boolean isCheckOut) {
+        device.setIsCheckedOut(isCheckOut);
+        device.setLastCheckedOutBy(checkOutBy);
+        device.setLastCheckedOutDate(checkOutDate);
+
+        mExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDeviceDao.updateDevice(device);
+            }
+        });
+    }
+
+    private List<Device> getFakeDevices() {
         String devicesJSON = "[\n" +
                 "  {\n" +
                 "    \"id\": 0,\n" +

@@ -21,7 +21,7 @@ public class DetailsActivityViewModel extends ViewModel {
 
     public void toggleCheckStatus(boolean isCheckOut, String CheckOutBy, String CheckOutDate) {
         mRepository.toggleCheckedStatus(
-                mDevice.getValue().getId(),
+                mDevice.getValue(),
                 CheckOutBy,
                 CheckOutDate,
                 isCheckOut

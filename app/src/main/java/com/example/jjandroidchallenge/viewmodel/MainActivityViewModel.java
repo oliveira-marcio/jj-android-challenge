@@ -19,7 +19,7 @@ public class MainActivityViewModel extends ViewModel {
         return mRepository.getAllDevices();
     }
 
-    public void removeDevice(long id){
-        mRepository.removeDeviceById(id);
+    public void removeDevice(Device device) {
+        mRepository.removeDeviceById(device);
     }
 }

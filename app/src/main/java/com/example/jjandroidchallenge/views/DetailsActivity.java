@@ -34,7 +34,9 @@ public class DetailsActivity extends AppCompatActivity {
 
         Device device = getIntent().getParcelableExtra("device");
 
-        DetailsViewModelFactory factory = Injector.provideDetailsViewModelFactory(device.getId());
+        DetailsViewModelFactory factory = Injector
+                .provideDetailsViewModelFactory(this.getApplicationContext(), device.getId());
+
         mViewModel = ViewModelProviders
                 .of(this, factory)
                 .get(DetailsActivityViewModel.class);
@@ -83,6 +85,7 @@ public class DetailsActivity extends AppCompatActivity {
     private void doCheckIn() {
         mViewModel.toggleCheckStatus(false, null, null);
         Toast.makeText(DetailsActivity.this, R.string.dialog_check_in_confirmation, Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     private void doCheckOut() {
@@ -120,6 +123,7 @@ public class DetailsActivity extends AppCompatActivity {
                                     Utils.dateToTMZ(Calendar.getInstance().getTime()));
                             dialog.dismiss();
                             Toast.makeText(DetailsActivity.this, R.string.dialog_check_out_confirmation, Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     }
                 });

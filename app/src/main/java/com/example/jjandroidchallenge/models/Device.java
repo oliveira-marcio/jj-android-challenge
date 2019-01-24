@@ -1,15 +1,20 @@
 package com.example.jjandroidchallenge.models;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@Entity(tableName = "devices")
 public class Device implements Parcelable {
 
     @SerializedName("id")
     @Expose
+    @PrimaryKey(autoGenerate = true)
     private Long id;
     @SerializedName("device")
     @Expose
@@ -53,7 +58,32 @@ public class Device implements Parcelable {
         this.isCheckedOut = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
     }
 
+    @Ignore
     public Device() {
+    }
+
+    @Ignore
+    public Device(String device, String os, String manufacturer) {
+        this.device = device;
+        this.os = os;
+        this.manufacturer = manufacturer;
+        this.isCheckedOut = false;
+    }
+
+    public Device(Long id,
+                  String device,
+                  String os,
+                  String manufacturer,
+                  String lastCheckedOutDate,
+                  String lastCheckedOutBy,
+                  Boolean isCheckedOut) {
+        this.id = id;
+        this.device = device;
+        this.os = os;
+        this.manufacturer = manufacturer;
+        this.lastCheckedOutDate = lastCheckedOutDate;
+        this.lastCheckedOutBy = lastCheckedOutBy;
+        this.isCheckedOut = isCheckedOut;
     }
 
     public Long getId() {

@@ -49,7 +49,9 @@ public class AddDeviceActivity extends AppCompatActivity {
         mOSEditText.setOnTouchListener(mTouchListener);
         mManufacturerEditText.setOnTouchListener(mTouchListener);
 
-        AddDeviceViewModelFactory factory = Injector.provideAddDeviceViewModelFactory();
+        AddDeviceViewModelFactory factory = Injector
+                .provideAddDeviceViewModelFactory(this.getApplicationContext());
+
         mViewModel = ViewModelProviders
                 .of(this, factory)
                 .get(AddDeviceActivityViewModel.class);
