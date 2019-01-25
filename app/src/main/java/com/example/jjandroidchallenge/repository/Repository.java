@@ -10,6 +10,7 @@ import com.example.jjandroidchallenge.database.DeviceDao;
 import com.example.jjandroidchallenge.models.Device;
 import com.example.jjandroidchallenge.network.DeviceDataService;
 import com.example.jjandroidchallenge.utils.AppExecutors;
+import com.example.jjandroidchallenge.utils.Utils;
 
 import java.util.List;
 
@@ -52,6 +53,11 @@ public class Repository {
     }
 
     private void fetchAndSyncDevices() {
+        if (!Utils.isNetworkConnected(mContext)) {
+            Toast.makeText(mContext, R.string.network_connection_error, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         mDataService.getDevices().enqueue(new Callback<List<Device>>() {
             @Override
             public void onResponse(Call<List<Device>> call, final Response<List<Device>> response) {

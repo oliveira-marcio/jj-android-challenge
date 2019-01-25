@@ -1,5 +1,8 @@
 package com.example.jjandroidchallenge.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,5 +29,12 @@ public class Utils {
             e.printStackTrace();
             return date;
         }
+    }
+
+    public static boolean isNetworkConnected(Context context) {
+        boolean isConected;
+        ConnectivityManager conectivtyManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        isConected = conectivtyManager.getActiveNetworkInfo() != null && conectivtyManager.getActiveNetworkInfo().isConnected();
+        return isConected;
     }
 }

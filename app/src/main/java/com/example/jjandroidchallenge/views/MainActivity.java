@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.jjandroidchallenge.R;
 import com.example.jjandroidchallenge.models.Device;
 import com.example.jjandroidchallenge.utils.Injector;
+import com.example.jjandroidchallenge.utils.Utils;
 import com.example.jjandroidchallenge.viewmodel.MainActivityViewModel;
 import com.example.jjandroidchallenge.viewmodel.MainViewModelFactory;
 
@@ -100,9 +101,15 @@ public class MainActivity extends AppCompatActivity implements DeviceAdapter.Dev
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mViewModel.refreshDevices();
+                if(Utils.isNetworkConnected(MainActivity.this)) {
+                    mViewModel.refreshDevices();
+                } else {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    Toast.makeText(MainActivity.this, R.string.network_connection_error, Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
     }
 
     private void showDeviceList() {
